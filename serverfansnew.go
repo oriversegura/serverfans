@@ -49,10 +49,9 @@ func main() {
 	// Get the Password and save in enviroment variable
 	form.Append(
 		huh.NewInput().
-			Title("Enter server password: ").
-			Prompt("Password: ").
-			Hidden().
-			required(true).
+			Title("Server Password").
+			EchoMode(huh.EchoModePassword).
+			Description("Enter server Password: ").
 			Value(&password),
 	)
 
