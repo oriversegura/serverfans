@@ -1,11 +1,31 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"regexp"
+
+	"github.com/charmbracelet/huh"
+)
+
 func main() {
-	//declare variables to use
-	var user, ip, password string
+	// p := tea.NewProgram(model{}, tea.WithReportFocus())
+	// New Form
+	form := huh.NewForm()
+
+	// declare variables to use
+	var user, ip string
 	var fanSpeed int
 
-	//Valite ipmitool is installed
+	// Valite ipmitool is installed
+	cmdValidate := exec.Command("whereis", "ipmitool")
+	if err := cmdValidate.Run(); err != nil {
+		log.Fatal(err)
+	}
 
-	//Get ip and verify is valid with regex
+	// Get ip and verify is valid with regex
 	fmt.Printf("Insert server ip: ")
 	fmt.Scanf("%s", &ip)
 	pattern := "^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$"
@@ -19,17 +39,29 @@ func main() {
 	}
 
 	// Get the user and save in enviroment variable
-	fmt.Printf("Insert server user: ")
+	fmt.Printf("%s", "Insert server user: ")
 	fmt.Scan(&user)
 	os.Setenv("IPMI_USER", user)
 
-	//Get the Password and save in enviroment variable
-	fmt.Printf("Insert server password: ")
-	fmt.Scan(&password)
-	os.Setenv("IPMI_PASS", password)
+	// Get the password
+	var password string
+
+	// Get the Password and save in enviroment variable
+	form.Append(
+		huh.NewInput().
+			Title("Enter server password: ").
+			Prompt("Password: ").
+			Hidden().
+			required(true).
+			Value(&password),
+	)
+
+	if err := form.Run(); err != nil {
+		log.Fatal(err)
+	}
 
 	// Insert fan speed in percent
-	fmt.Printf("Inserte velocidad de los fan del 10% al 100%")
+	fmt.Printf("%s", "Insert Speed 10 to 100 percent: ")
 	fmt.Scanf("%d", &fanSpeed)
 	hexString := fmt.Sprintf("0x%x", fanSpeed)
 
