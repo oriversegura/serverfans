@@ -6,18 +6,46 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"time"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/huh"
 )
 
+type Input struct {
+	key       string
+	id        int
+	textinput textinput.Model
+	inline    bool
+	validate  func(string) error
+	err       error
+	focused   bool
+
+	accessible bool
+	width      int
+	height     int // not really used anywhere
+
+}
+
 func main() {
-	// p := tea.NewProgram(model{}, tea.WithReportFocus())
-	// New Form
-	form := huh.NewForm()
+
+	//Const Necesary to logical use
+	const minFanSpeed = 10
+	const maxFanSpeed = 100
+	/*ipmiToolPath := []string {
+		"/usr/local/bin/ipmitool",
+		"/usr/bin/ipmitol",
+		"C:\\ipmitool",
+	}*/
 
 	// declare variables to use
 	var user, ip string
 	var fanSpeed int
+
+	//Validate Ipmi is installed on system
+
+	// New Form
+	form := huh.NewForm()
 
 	// Valite ipmitool is installed
 	cmdValidate := exec.Command("whereis", "ipmitool")
@@ -29,7 +57,6 @@ func main() {
 	fmt.Printf("Insert server ip: ")
 	fmt.Scanf("%s", &ip)
 	pattern := "^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$"
-
 	match, err := regexp.MatchString(pattern, ip)
 	if err != nil {
 		log.Fatal(err)
@@ -48,20 +75,20 @@ func main() {
 
 	// Get the Password and save in enviroment variable
 	form.Append(
-		huh.NewInput().
-			Title("Server Password").
-			EchoMode(huh.EchoModePassword).
-			Description("Enter server Password: ").
-			Value(&password),
-	)
+		huh.NewInput().Title("Server Password").EchoMode(huh.EchoModePassword).Description("Enter server Password: ").Value(&password))
 
 	if err := form.Run(); err != nil {
 		log.Fatal(err)
 	}
 
-	// Insert fan speed in percent
-	fmt.Printf("%s", "Insert Speed 10 to 100 percent: ")
+	// Get user Fan Speed in percent
+	fmt.Printf("Insert Fan Speed %d to %d percent: ", minFanSpeed, maxFanSpeed)
 	fmt.Scanf("%d", &fanSpeed)
+	//validate Fan Speed is Correct
+	if fanSpeed < minFanSpeed || fanSpeed > maxFanSpeed {
+		log.Fatal("Insert Valid Fan Speed")
+	}
+	// Print Valid Fan Speed on second Command
 	hexString := fmt.Sprintf("0x%x", fanSpeed)
 
 	// Primero, establecer el control manual del ventilador
@@ -77,4 +104,8 @@ func main() {
 	}
 
 	fmt.Printf("Ventiladores al %d%", fanSpeed)
+
+	time.Sleep(10 * time.Second)
+
+	return
 }
