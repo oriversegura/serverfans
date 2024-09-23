@@ -2,30 +2,13 @@ package main
 
 import (
 	"fmt"
+	"huh"
 	"log"
 	"os"
 	"os/exec"
 	"regexp"
 	"time"
-
-	"github.com/charmbracelet/bubbles/textinput"
-	"github.com/charmbracelet/huh"
 )
-
-type Input struct {
-	key       string
-	id        int
-	textinput textinput.Model
-	inline    bool
-	validate  func(string) error
-	err       error
-	focused   bool
-
-	accessible bool
-	width      int
-	height     int // not really used anywhere
-
-}
 
 func main() {
 
@@ -43,9 +26,6 @@ func main() {
 	var fanSpeed int
 
 	//Validate Ipmi is installed on system
-
-	// New Form
-	form := huh.NewForm()
 
 	// Valite ipmitool is installed
 	cmdValidate := exec.Command("whereis", "ipmitool")
@@ -74,12 +54,22 @@ func main() {
 	var password string
 
 	// Get the Password and save in enviroment variable
-	form.Append(
-		huh.NewInput().Title("Server Password").EchoMode(huh.EchoModePassword).Description("Enter server Password: ").Value(&password))
+	// New Form
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Server Password").
+				EchoMode(huh.EchoModePassword).
+				Description("Enter server Password: ").
+				Value(&password),
+		),
+	)
 
-	if err := form.Run(); err != nil {
+	err := form.Run()
+	if err != nil {
 		log.Fatal(err)
 	}
+	//os.Setenv("IPMI_PASS", password)
 
 	// Get user Fan Speed in percent
 	fmt.Printf("Insert Fan Speed %d to %d percent: ", minFanSpeed, maxFanSpeed)
