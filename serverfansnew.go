@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"huh"
 	"log"
-	"os"
 	"os/exec"
 	"regexp"
-	"time"
+
+	"github.com/charmbracelet/huh"
 )
 
 func main() {
@@ -48,7 +47,6 @@ func main() {
 	// Get the user and save in enviroment variable
 	fmt.Printf("%s", "Insert server user: ")
 	fmt.Scan(&user)
-	os.Setenv("IPMI_USER", user)
 
 	// Get the password
 	var password string
@@ -65,11 +63,10 @@ func main() {
 		),
 	)
 
-	err := form.Run()
+	err = form.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-	//os.Setenv("IPMI_PASS", password)
 
 	// Get user Fan Speed in percent
 	fmt.Printf("Insert Fan Speed %d to %d percent: ", minFanSpeed, maxFanSpeed)
@@ -82,20 +79,17 @@ func main() {
 	hexString := fmt.Sprintf("0x%x", fanSpeed)
 
 	// Primero, establecer el control manual del ventilador
-	cmd1 := exec.Command("ipmitool", "-I", "lanplus", "-H", ip, "-U", os.Getenv("IPMI_USER"), "-P", os.Getenv("IPMI_PASS"), "raw", "0x30", "0x30", "0x01", "0x00")
+	cmd1 := exec.Command("ipmitool", "-I", "lanplus", "-H", ip, "-U", user, "-P", password, "raw", "0x30", "0x30", "0x01", "0x00")
 	if err := cmd1.Run(); err != nil {
 		log.Fatal(err)
 	}
 
 	// Segundo, establecer los ventiladores al 20%
-	cmd2 := exec.Command("ipmitool", "-I", "lanplus", "-H", ip, "-U", os.Getenv("IPMI_USER"), "-P", os.Getenv("IPMI_PASS"), "raw", "0x30", "0x30", "0x02", "0xff", hexString)
+	cmd2 := exec.Command("ipmitool", "-I", "lanplus", "-H", ip, "-U", user, "-P", password, "raw", "0x30", "0x30", "0x02", "0xff", hexString)
 	if err := cmd2.Run(); err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Printf("Ventiladores al %d%", fanSpeed)
 
-	time.Sleep(10 * time.Second)
-
-	return
 }
