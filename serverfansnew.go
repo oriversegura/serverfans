@@ -5,6 +5,7 @@ import (
 	"log"
 	"os/exec"
 	"regexp"
+	"strconv"
 
 	"github.com/charmbracelet/huh"
 )
@@ -21,8 +22,7 @@ func main() {
 	}*/
 
 	// declare variables to use
-	var user, ip string
-	var fanSpeed int
+	var user, ip, fanSpeedT string
 
 	//Validate Ipmi is installed on system
 
@@ -32,9 +32,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Get ip and verify is valid with regex
-	fmt.Printf("Insert server ip: ")
-	fmt.Scanf("%s", &ip)
+	// // Get ip and verify is valid with regex
+	// fmt.Printf("Insert server ip: ")
+	// fmt.Scanf("%s", &ip)
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Server IP").
+				EchoMode(huh.EchoModeNormal).
+				Description("Enter the server IP: ").
+				Value(&ip),
+		),
+	)
+
+	err := form.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	pattern := "^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$"
 	match, err := regexp.MatchString(pattern, ip)
 	if err != nil {
@@ -45,20 +60,34 @@ func main() {
 	}
 
 	// Get the user and save in enviroment variable
-	fmt.Printf("%s", "Insert server user: ")
-	fmt.Scan(&user)
+	// fmt.Printf("%s", "Insert server user: ")
+	// fmt.Scan(&user)
+	form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Server User").
+				EchoMode(huh.EchoModeNormal).
+				Description("Enter server user: ").
+				Value(&user),
+		),
+	)
+
+	err = form.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Get the password
 	var password string
 
 	// Get the Password and save in enviroment variable
 	// New Form
-	form := huh.NewForm(
+	form = huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Server Password").
 				EchoMode(huh.EchoModePassword).
-				Description("Enter server Password: ").
+				Description("Enter server password: ").
 				Value(&password),
 		),
 	)
@@ -69,8 +98,30 @@ func main() {
 	}
 
 	// Get user Fan Speed in percent
-	fmt.Printf("Insert Fan Speed %d to %d percent: ", minFanSpeed, maxFanSpeed)
-	fmt.Scanf("%d", &fanSpeed)
+	//
+	form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Fan Speed").
+				EchoMode(huh.EchoModeNormal).
+				Description("Insert Fan Speed 10 to 100 percent: ").
+				Value(&fanSpeedT),
+		),
+	)
+
+	err = form.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Convert to Int
+	fanSpeed, err := strconv.Atoi(fanSpeedT)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// fmt.Printf("Insert Fan Speed %d to %d percent: ", minFanSpeed, maxFanSpeed)
+	// fmt.Scanf("%d", &fanSpeed)
 	//validate Fan Speed is Correct
 	if fanSpeed < minFanSpeed || fanSpeed > maxFanSpeed {
 		log.Fatal("Insert Valid Fan Speed")
@@ -90,6 +141,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Ventiladores al %d%", fanSpeed)
+	fmt.Printf("Ventiladores al %d% \n", fanSpeed)
 
 }
