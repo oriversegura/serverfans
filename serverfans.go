@@ -141,6 +141,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Ventiladores al %d% \n", fanSpeed)
+	form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().
+				Title("Fan Speed set to " + fanSpeedT + " percent").
+				Affirmative("Quit").
+				Negative("Quit"),
+		),
+	)
+	err = form.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// fmt.Printf("Fan Speed set to %d% \n", fanSpeed)
 
 }
