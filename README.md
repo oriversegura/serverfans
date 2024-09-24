@@ -2,6 +2,7 @@
 
 This Golang script its a simple way to use IPMITOOL to control the fan speeds of a server. IPMITOOL is a command-line interface for managing IPMI-compliant devices, including servers, workstations, and blade systems.
 
+Btw use Huh to to improve the visual interface
 ## Prerequisites
 
 - A server/workstation with IPMI support.
