@@ -15,18 +15,16 @@ func main() {
 	//Const Necesary to logical use
 	const minFanSpeed = 10
 	const maxFanSpeed = 100
-	/*ipmiToolPath := []string {
-		"/usr/local/bin/ipmitool",
-		"/usr/bin/ipmitol",
-		"C:\\ipmitool",
-	}*/
+
+	//Confirm ipmitool is installed
+	if exec.Command("ipmitool", "-V").Run() != nil {
+		log.Fatal("Ipmi is no installed on system!")
+	}
 
 	// declare variables to use
 	var user, ip, fanSpeedT string
 
 	//Validate Ipmi is installed on system
-
-	// Valite ipmitool is installed
 	cmdValidate := exec.Command("whereis", "ipmitool")
 	if err := cmdValidate.Run(); err != nil {
 		log.Fatal(err)
@@ -120,8 +118,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// fmt.Printf("Insert Fan Speed %d to %d percent: ", minFanSpeed, maxFanSpeed)
-	// fmt.Scanf("%d", &fanSpeed)
 	//validate Fan Speed is Correct
 	if fanSpeed < minFanSpeed || fanSpeed > maxFanSpeed {
 		log.Fatal("Insert Valid Fan Speed")
