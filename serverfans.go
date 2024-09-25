@@ -41,7 +41,7 @@ func main() {
 				Description("Enter the server IP: ").
 				Value(&ip),
 		),
-	)
+	).WithTheme(huh.ThemeCatppuccin())
 
 	err := form.Run()
 	if err != nil {
@@ -68,7 +68,7 @@ func main() {
 				Description("Enter server user: ").
 				Value(&user),
 		),
-	)
+	).WithTheme(huh.ThemeCatppuccin())
 
 	err = form.Run()
 	if err != nil {
@@ -88,7 +88,7 @@ func main() {
 				Description("Enter server password: ").
 				Value(&password),
 		),
-	)
+	).WithTheme(huh.ThemeCatppuccin())
 
 	err = form.Run()
 	if err != nil {
@@ -105,7 +105,7 @@ func main() {
 				Description("Insert Fan Speed 10 to 100 percent: ").
 				Value(&fanSpeedT),
 		),
-	)
+	).WithTheme(huh.ThemeCatppuccin())
 
 	err = form.Run()
 	if err != nil {
@@ -144,7 +144,8 @@ func main() {
 				Affirmative("Quit").
 				Negative("Quit"),
 		),
-	)
+	).WithTheme(huh.ThemeCatppuccin())
+
 	err = form.Run()
 	if err != nil {
 		log.Fatal(err)
