@@ -31,8 +31,6 @@ func main() {
 	}
 
 	// // Get ip and verify is valid with regex
-	// fmt.Printf("Insert server ip: ")
-	// fmt.Scanf("%s", &ip)
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
@@ -58,8 +56,6 @@ func main() {
 	}
 
 	// Get the user and save in enviroment variable
-	// fmt.Printf("%s", "Insert server user: ")
-	// fmt.Scan(&user)
 	form = huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
@@ -78,8 +74,7 @@ func main() {
 	// Get the password
 	var password string
 
-	// Get the Password and save in enviroment variable
-	// New Form
+	// Get the Password
 	form = huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
@@ -96,7 +91,6 @@ func main() {
 	}
 
 	// Get user Fan Speed in percent
-	//
 	form = huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
@@ -150,7 +144,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// fmt.Printf("Fan Speed set to %d% \n", fanSpeed)
 
 }
