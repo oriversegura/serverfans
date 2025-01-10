@@ -135,25 +135,22 @@ func main() {
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Fan Speed set to " + fanSpeedT + " percent").
-				Affirmative("Quit").
-				Negative("Start again"),
+				Affirmative("quit").
+				Negative("start again"),
 		),
 	).WithTheme(huh.ThemeCatppuccin())
 
 	for {
-		err = form.Run()
-		if err != nil {
+		if err := form.Run(); err != nil {
 			log.Fatal(err)
 		}
 
-		buttons := form.KeyBinds()
-
-		if buttons[0].Enabled() == true {
-			return
+		buttons := form.Get("")
+		
+		if buttons == true {
+			break
 		} else {
 			main()
 		}
-
 	}
-
 }
