@@ -11,12 +11,11 @@ import (
 )
 
 func main() {
-
-	//Const Necesary to logical use
+	// Const Necesary to logical use
 	const minFanSpeed = 10
 	const maxFanSpeed = 100
 
-	//Confirm ipmitool is installed
+	// Confirm ipmitool is installed
 	if exec.Command("ipmitool", "-V").Run() != nil {
 		log.Fatal("Ipmi is no installed on system!")
 	}
@@ -24,7 +23,7 @@ func main() {
 	// declare variables to use
 	var user, ip, fanSpeedT string
 
-	//Validate Ipmi is installed on system
+	// Validate Ipmi is installed on system
 	cmdValidate := exec.Command("whereis", "ipmitool")
 	if err := cmdValidate.Run(); err != nil {
 		log.Fatal(err)
@@ -51,7 +50,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if match != true {
+	if !match {
 		fmt.Errorf("Insert a Valid IP")
 	}
 
@@ -106,13 +105,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//Convert to Int
+	// Convert to Int
 	fanSpeed, err := strconv.Atoi(fanSpeedT)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//validate Fan Speed is Correct
+	// validate Fan Speed is Correct
 	if fanSpeed < minFanSpeed || fanSpeed > maxFanSpeed {
 		log.Fatal("Insert Valid Fan Speed")
 	}
@@ -146,7 +145,7 @@ func main() {
 		}
 
 		buttons := form.Get("")
-		
+
 		if buttons == true {
 			break
 		} else {
