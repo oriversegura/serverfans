@@ -15,7 +15,7 @@ func main() {
 
 	configuration, err := config.LoadConfig("/home/osegura/Software/Golang/serverfans/config.json")
 	if err != nil {
-		log.Fatalf("Mamense un guebo los que inventaron json")
+		log.Fatalf("No se pudo cargar el archivo JSON")
 	}
 
 	// Const Necesary to logical use
