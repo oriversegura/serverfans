@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	configuration, err := config.LoadConfig("/home/osegura/Software/Golang/serverfans/config.json")
+	configuration, err := config.LoadConfig("config.json")
 	if err != nil {
 		log.Fatalf("No se pudo cargar el archivo JSON")
 	}
