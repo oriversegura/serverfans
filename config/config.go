@@ -15,20 +15,18 @@ type Config struct {
 
 func LoadConfig(path string) (*Config, error) {
 
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("No se puede leer el archivo %w", err)
+	config := &Config{}
+
+	if len(os.Args) > 1 {
+		path = os.Args[1]
+		file, err := os.ReadFile(path)
+		if err == nil {
+			json.Unmarshal(file, config)
+			fmt.Println("Configuration cargada con exito!", path)
+			return config, nil
+		}
+		fmt.Println("No se pudo leer el archivo de configuración, usando valores por defecto.")
 	}
 
-	var config Config
-
-	if err := json.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("Formato JSON invalido: %w", err)
-	}
-
-	if config.IP == "" || config.User == "" {
-		return nil, fmt.Errorf("El archivo contiene campos obligatorios vacios")
-	}
-
-	return &config, nil
+	return config, nil
 }
