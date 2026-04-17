@@ -1,53 +1,89 @@
-# Introduction
+# ServerFans
 
-This Golang script its a simple way to use IPMITOOL to control the fan speeds of a server. IPMITOOL is a command-line interface for managing IPMI-compliant devices, including servers, workstations, and blade systems.
+A terminal UI for controlling server fan speeds via IPMI, built with Go and [Charmbracelet Huh](https://github.com/charmbracelet/huh).
 
-Btw use Huh to to improve the visual interface
-## Prerequisites
+## Requirements
 
-- A server/workstation with IPMI support.
-- IPMITOOL installed on your system.(aviable for all systems)
-- Same network as the server.
-- Credentials of IPMI user with power user privileges.
+| Requirement | Notes |
+|---|---|
+| `ipmitool` | Must be installed and available in your PATH |
+| Network access | Same network segment as the target server |
+| IPMI credentials | User with **Operator** or **Administrator** privileges |
 
-## Breakdown
+## Installation
 
-### Get User Input
+```bash
+git clone https://github.com/oriversegura/serverfans
+cd serverfans
+go build -o serverfans .
+```
 
-Prompts the user for the server's IP address, Username and password.
-After the necessary info comes to get the percent of speed to set.
+## Usage
 
-### Construct Commands
+**Interactive mode** — prompts for all values:
 
-Builds the IPMITOOL commands using the provided input.
+```bash
+./serverfans
+```
 
-### Execute Commands
+**Config file mode** — pre-fills fields from a JSON file:
 
-Execute the constructed commands in a order.
+```bash
+./serverfans config.json
+```
 
-### Error Handling
+The config file can provide any combination of fields. Missing fields are prompted interactively.
 
-Use error handling, to display a message on the output of any of the commands or system calls to be executed.
+### Config file format
 
-### Explanation of IPMITOOL Commands
+```json
+{
+  "ip":       "192.168.1.50",
+  "user":     "admin",
+  "password": "secret",
+  "speed":    "40"
+}
+```
 
-ipmitool I lanplus: Selects the LAN+ interface for IPMI communication.
--H address: Specifies the server's IP address.
--U user: Sets the username for IPMI authentication.
--P password: Sets the password for IPMI authentication.
-raw: Specifies the raw command to execute.
+> **Tip:** Omit `password` from the file and enter it interactively to avoid storing credentials on disk.
 
-### Usage
+## Fan speed range
 
-- Make sure you have installed ipmitool
-- Make sure you have Golang installed on your system.
-- Run the "serverfans.go" with go run or build.
-- Enter the server's ip address, user, and password.
-- Enter your fan speed to set in 10 to 100 percent.
-- The script will execute the IPMITOOL commands to set the fan speed.
+| Value | Meaning |
+|---|---|
+| `10` | Minimum (10%) |
+| `100` | Maximum (100%) |
 
-### Additional Notes
+## How it works
 
-- IPMITOOL is an open source tool, maintained by IBM and used to manage Dell, HP and other branded servers/workstations.
-- Refer to the IPMITOOL documentation for more details on available commands and options.
-- This script provides a basic use. You may need to customize it further based on your specific requirements and server configuration.
+ServerFans sends two raw IPMI commands to the target host:
+
+1. **Enable manual fan control** — disables the BMC's automatic fan algorithm.
+2. **Set fan speed** — applies the requested percentage to all fans.
+
+```
+ipmitool -I lanplus -H <ip> -U <user> -P <pass> raw 0x30 0x30 0x01 0x00
+ipmitool -I lanplus -H <ip> -U <user> -P <pass> raw 0x30 0x30 0x02 0xff <hex_speed>
+```
+
+> These raw commands target Dell iDRAC. Other vendors (HP iLO, Supermicro) may use different OEM commands.
+
+## Project structure
+
+```
+serverfans/
+├── serverfans.go          # Entry point — orchestrates the run loop
+├── internal/
+│   ├── config/
+│   │   └── config.go      # Config struct and JSON loader
+│   ├── ipmi/
+│   │   └── client.go      # ipmitool wrappers (CheckInstalled, SetFanSpeed)
+│   └── ui/
+│       └── ui.go          # Banner, forms, and styled output
+├── example_config.json
+└── go.mod
+```
+
+## License
+
+MIT
